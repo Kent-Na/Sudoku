@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from lib.text import trim
 from functools import reduce
 from sys import exit
