@@ -32,7 +32,12 @@ def solverule1(sudoku_mat,i,j):
     if len(sol_candidates) >= 2:    # case: unknown
         return False
     
-    sol = sol_candidates.pop()
+    try:
+        sol = sol_candidates.pop()
+    except KeyError:
+        print(unknown)
+        print(sudoku_mat[i][j])
+
     return sol
 
 def solverule2(sudoku_mat,i,j):
@@ -48,14 +53,7 @@ def solverule2(sudoku_mat,i,j):
     if len(sol_candidates) >= 2:    # case: unknown
         return False
 
-    try:
-        sol = sol_candidates.pop()
-    except KeyError:
-        print(sudoku_mat)
-        print(sudoku_mat[i][j])
-        print(sol_candidates)
-        print(sudoku_mat[:][j])
-        print(i,j)
+    sol = sol_candidates.pop()
     return sol
 
 def solverule3(sudoku_mat,i,j):
@@ -63,16 +61,17 @@ def solverule3(sudoku_mat,i,j):
     cell check
     """
     sudoku_mat = sudoku_mat[:][:]
+    
     if sudoku_mat[i][j] != unknown:
         return None
 
-    cell_set = set([sudoku_mat[i//3 + k][j//3 + l] \
+    cell_set = set([sudoku_mat[i//3 * 3 + k][j//3 * 3 + l] \
             for k in range(3) for l in range(3)])
     sol_candidates = set(range(1,10)).difference(cell_set)
     if len(sol_candidates) >= 2:
         return False
-
     sol = sol_candidates.pop()
+        
     return sol
 
 solve_rules = (solverule1, solverule2, solverule3)
@@ -126,6 +125,6 @@ def main(filename):
     print(sudoku_repr(sol))
 
 def sudoku_test():
-    main('example.dat')
+    main('easy_question.dat')
 
 sudoku_test()
