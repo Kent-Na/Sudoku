@@ -43,11 +43,19 @@ def solverule2(sudoku_mat,i,j):
     if sudoku_mat[i][j] != unknown:
         return None
 
-    sol_candidates = set(range(1,10)).difference(set(sudoku_mat[:][j]))
+    column_set = set([sudoku_mat[k][j] for k in range(ROW)])
+    sol_candidates = set(range(1,10)).difference(set(column_set))
     if len(sol_candidates) >= 2:    # case: unknown
         return False
 
-    sol = sol_candidates.pop()
+    try:
+        sol = sol_candidates.pop()
+    except KeyError:
+        print(sudoku_mat)
+        print(sudoku_mat[i][j])
+        print(sol_candidates)
+        print(sudoku_mat[:][j])
+        print(i,j)
     return sol
 
 def solverule3(sudoku_mat,i,j):
@@ -58,7 +66,7 @@ def solverule3(sudoku_mat,i,j):
     if sudoku_mat[i][j] != unknown:
         return None
 
-    cell_set = set([sudoku[i//3 + k][j//3 + l] \
+    cell_set = set([sudoku_mat[i//3 + k][j//3 + l] \
             for k in range(3) for l in range(3)])
     sol_candidates = set(range(1,10)).difference(cell_set)
     if len(sol_candidates) >= 2:
@@ -85,7 +93,7 @@ def solve_sudoku(sudoku_mat):
                     sol = rule(sudoku_mat, i, j)
                     if not sol in (None, False):
                         sudoku_mat[i][j] = sol
-        print(sudoku_mat)
+                        print('define {},{}'.format(i,j))
     return sudoku_mat
 
 def load_sudoku(filename):
@@ -106,11 +114,18 @@ def sudoku_repr(sudoku):
         s += '\n'
     return s
 
+def main(filename):
+    sudoku = load_sudoku(filename)
+    print('give: ' + '=' * 9)
+    print(sudoku_repr(sudoku))
+    
+    sol = solve_sudoku(sudoku)
+    print()
+    print('solution:' + '=' * 9)
+    print()
+    print(sudoku_repr(sol))
 
 def sudoku_test():
-    sudoku = load_sudoku('easy_quiestion.dat')
-    print(sudoku_repr(sudoku))
-    sol = solve_sudoku(sudoku)
-    print(sudoku_repr(sol))
+    main('example.dat')
 
 sudoku_test()
