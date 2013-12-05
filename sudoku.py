@@ -82,8 +82,10 @@ def solve_sudoku(sudoku_mat):
     return a solution of sudoku.
     """
     sudoku_mat = sudoku_mat[:][:]
+    is_finished = False
     
-    while not defined_matrix(sudoku_mat):
+    while not defined_matrix(sudoku_mat) and not is_finished:
+        old_mat = sudoku_mat
         for i in range(ROW):
             for j in range(ROW):
                 if sudoku_mat[i][j] != unknown: # case defined
@@ -93,6 +95,8 @@ def solve_sudoku(sudoku_mat):
                     if not sol in (None, False):
                         sudoku_mat[i][j] = sol
                         print('define {},{}'.format(i,j))
+        if old_mat == sudoku_mat:
+            is_finished = True
     return sudoku_mat
 
 def load_sudoku(filename):
@@ -120,11 +124,21 @@ def main(filename):
     
     sol = solve_sudoku(sudoku)
     print()
+    if not defined_matrix(sol):
+        print('The question can\'t solved.')
     print('solution:' + '=' * 9)
     print()
     print(sudoku_repr(sol))
 
 def sudoku_test():
-    main('easy_question.dat')
+    main('example.dat')
 
-sudoku_test()
+if __name__ == '__main__':
+    is_test = False
+    
+    if is_test:
+        sudoku_test()
+    else:
+        from sys import argv
+        filename = argv[1]
+        main(filename)
