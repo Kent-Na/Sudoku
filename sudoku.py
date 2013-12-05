@@ -2,7 +2,6 @@
 from lib.text import trim
 from functools import reduce
 from sys import exit
-from doctest import testmod
 """
 Feature: 
 solve_sudoku(only one solution)
@@ -77,7 +76,7 @@ def solverule3(sudoku_mat,i,j):
 
 solve_rules = (solverule1, solverule2, solverule3)
 
-def solve_simple_sudoku(sudoku_mat):
+def solve_basic_sudoku(sudoku_mat):
     """
     Solve sudoku.
     return a solution of sudoku.
@@ -100,42 +99,36 @@ def solve_simple_sudoku(sudoku_mat):
             is_finished = True
     return sudoku_mat
 
-
-def get_candidates(sudoku_mat,i,j):
+def get_candidates(sudoku,i,j):
     """
-    >>> sudoku_mat = load_sudoku('example.dat')
-    >>> get_candidates(sudoku_mat, 0, 0)
-    set()
-    >>> get_candidates(sudoku_mat, 0,1)
-    set(2)
+    return cadidate at sudoku.(i,j)
+    if sudoku.(i,j) is defined, return None.
     """
-    sol_candidates = set(range(1,10))
-    verticals = set(sudoku_mat[i])
-    yokos     = set([sudoku_mat[k][j] for k in range(ROW)])
-    cells     = set([sudoku_mat[i//3 * 3 + k][j//3 * 3 + l] \
-            for k in range(SIZE) for l in range(SIZE)])
+    if sudoku[i][j] != unknown:
+        return None
 
-    sol_candidates = sol_candidates.difference(verticals)
-    sol_candidates = sol_candidates.difference(yokos)
-    sol_candidates = sol_candidates.difference(cells)
-    return sol_candidates
+    candidates = set(range(1,10))
+    vertical = set(sudoku[i])
+    yoko     = set([sudoku[k][j] for k in range(ROW)])
+    cell     = set([sudoku[i//3*3 + k][j//3*3 + l]\
+                for k in range(SIZE) for l in range(SIZE)])
+    candidates = candidates.difference(vertical)
+    candidates = candidates.difference(yoko)
+    candidates = candidates.difference(cell)
+    return candidates
 
-def solve_sudoku_by_recursive(sudoku_mat):
-    sudoku_mat = sudoku_mat[:][:]
-    a_solve = []
-    d_unsolved = {} # dictionary unsolved_index to sol_candidates
-    
-    ### define d_unsolved at first
-    for i in range(ROW + 1):
-        for j in range(ROW + 1):
-            if sudoku_mat[i][j] == unknown:
-                if not (i,j) in d_unsolved.keys():
-                    d_unsolved[(i,j)] = set()
-                d_unsolved[(i,j)].add()
-    
-    
+def get_all_candidates(sudoku, i, j):
+    """
+    """
+    d_candidates = {}
+    for i in range(ROW):
+        for j in range(ROW):
+            candidates = get_candidates(sudoku, i, j)
+            if not candidates:
+                d_candidates[(i,j)] = candidates
 
-    return tuple(a_solve)
+    return d_candidates
+
 
 def load_sudoku(filename):
     sudoku = [[0 for i in range(ROW)] for j in range(9)]
@@ -172,8 +165,7 @@ def sudoku_test():
     main('example.dat')
 
 if __name__ == '__main__':
-    """
-    is_test = False
+    is_test = True
     
     if is_test:
         sudoku_test()
@@ -181,4 +173,3 @@ if __name__ == '__main__':
         from sys import argv
         filename = argv[1]
         main(filename)
-    """
