@@ -74,6 +74,11 @@ def solverule3(sudoku_mat,i,j):
         
     return sol
 
+def solverule4(sudoku_mat, i, j):
+    """
+    Very abstract function
+    """
+
 solve_rules = (solverule1, solverule2, solverule3)
 
 def solve_basic_sudoku(sudoku_mat):
@@ -129,7 +134,7 @@ def get_all_candidates(sudoku):
 
     return d_candidates
 
-def solve_sudoku_by_recursive(sudoku):
+def solve_sudoku_by_recursive(sudoku):  # todo: with mistake?
     d_candiate = get_all_candidates(sudoku)
     sol = sudoku
 
