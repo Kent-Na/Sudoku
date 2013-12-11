@@ -117,19 +117,32 @@ def get_candidates(sudoku,i,j):
     candidates = candidates.difference(cell)
     return candidates
 
-def get_all_candidates(sudoku, i, j):
+def get_all_candidates(sudoku):
     """
     """
     d_candidates = {}
     for i in range(ROW):
         for j in range(ROW):
             candidates = get_candidates(sudoku, i, j)
-            if not candidates:
+            if candidates:
                 d_candidates[(i,j)] = candidates
 
     return d_candidates
 
+def solve_sudoku_by_recursive(sudoku):
+    d_candiate = get_all_candidates(sudoku)
+    sol = sudoku
 
+    for undef_ind in d_candiate:
+        for candiate in d_candiate[undef_ind]:
+            sol = sudoku
+            sol[undef_ind[0]][undef_ind[1]] = candiate
+            sol = solve_basic_sudoku(sol)
+            if defined_matrix(sol):
+                return sol
+            else:
+                return solve_sudoku_by_recursive(sol)
+                
 def load_sudoku(filename):
     sudoku = [[0 for i in range(ROW)] for j in range(9)]
     with open(filename) as f:
@@ -153,8 +166,7 @@ def main(filename):
     print('give: ' + '=' * 9)
     print(sudoku_repr(sudoku))
     
-    sol = solve_sudoku(sudoku)
-    print()
+    sol = solve_sudoku_by_recursive(sudoku)
     if not defined_matrix(sol):
         print('The question can\'t solved.')
     print('solution:' + '=' * 9)
