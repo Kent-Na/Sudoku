@@ -142,6 +142,13 @@ def solve_sudoku_by_recursive(sudoku):
                 return sol
             else:
                 return solve_sudoku_by_recursive(sol)
+
+    return sol  # case: solved
+
+def solve_sudoku(sudoku):
+    sudoku = sudoku[:]
+    sudoku = solve_sudoku_by_recursive(sudoku)
+    return solve_sudoku_by_recursive(sudoku)
                 
 def load_sudoku(filename):
     sudoku = [[0 for i in range(ROW)] for j in range(9)]
@@ -166,7 +173,7 @@ def main(filename):
     print('give: ' + '=' * 9)
     print(sudoku_repr(sudoku))
     
-    sol = solve_sudoku_by_recursive(sudoku)
+    sol = solve_sudoku(sudoku)
     if not defined_matrix(sol):
         print('The question can\'t solved.')
     print('solution:' + '=' * 9)
@@ -174,7 +181,7 @@ def main(filename):
     print(sudoku_repr(sol))
 
 def sudoku_test():
-    main('example.dat')
+    main('easy_question.dat')
 
 if __name__ == '__main__':
     is_test = True
