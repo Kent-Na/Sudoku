@@ -147,7 +147,7 @@ def solve_sudoku_by_recursive(sudoku):
 
 def solve_sudoku(sudoku):
     sudoku = sudoku[:]
-    sudoku = solve_sudoku_by_recursive(sudoku)
+    sudoku = solve_basic_sudoku(sudoku)
     return solve_sudoku_by_recursive(sudoku)
                 
 def load_sudoku(filename):
