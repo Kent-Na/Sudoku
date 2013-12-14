@@ -33,7 +33,7 @@ def is_legal_matrix(sudoku_mat):
     # vertical check
     for i in range(ROW):
         if set(sudoku_mat[i]) != set(range(1,10)):
-            print(sudoku_mat[i])
+            #print(sudoku_mat[i])
             return False
 
     # yoko check
@@ -91,7 +91,7 @@ def solverule1(sudoku_mat,i,j):
     If I this function returned None, we sudoku_mat[i][j] is defined.
     else we give solution at (i,j).
     """
-    sudoku_mat = clone_sudoku[sudoku_mat]
+    sudoku_mat = clone_sudoku(sudoku_mat)
     if sudoku_mat[i][j] != unknown:
         return None
 
@@ -111,7 +111,7 @@ def solverule2(sudoku_mat,i,j):
     """
     column check.
     """
-    sudoku_mat = clone_sudoku[sudoku_mat]
+    sudoku_mat = clone_sudoku(sudoku_mat)
     if sudoku_mat[i][j] != unknown:
         return None
 
@@ -127,7 +127,7 @@ def solverule3(sudoku_mat,i,j):
     """
     cell check
     """
-    sudoku_mat = clone_sudoku[sudoku_mat]
+    sudoku_mat = clone_sudoku(sudoku_mat)
     
     if sudoku_mat[i][j] != unknown:
         return None
@@ -149,7 +149,7 @@ def solve_basic_sudoku(sudoku_mat):
     Solve sudoku.
     return a solution of sudoku.
     """
-    sudoku_mat = clone_sudoku[sudoku_mat]
+    sudoku_mat = clone_sudoku(sudoku_mat)
     is_finished = False
     
     while not defined_matrix(sudoku_mat) and not is_finished:
@@ -169,7 +169,7 @@ def solve_basic_sudoku(sudoku_mat):
 
 ## solve by recursive method
 
-def solve_sudoku_by_recursive(sudoku):  # todo: with mistake?
+def solve_sudoku_by_recursive(sudoku, cnt=0):  # todo: with mistake?
     #print(sudoku)
     sudoku = clone_sudoku(sudoku)
     #print(sudoku)
@@ -183,24 +183,24 @@ def solve_sudoku_by_recursive(sudoku):  # todo: with mistake?
             return None
 
     undef_ind, candiates = list(d_candiate.items())[0]
-    #print(candiates)
-    #print(undef_ind)
-    #print(sudoku_repr(sudoku))
-    #print("-------------")
+    if cnt < 10:
+        print('{}th loop is started.'.format(cnt))
     for candiate in candiates:
-        #print("Case R")
         sol = [[sudoku[j][i] for i in range(ROW)] for j in range(ROW)]
         sol[undef_ind[0]][undef_ind[1]] = candiate
-        #print(sudoku_repr(sol))
-        #sol = solve_basic_sudoku(sol)
 
-        sol = solve_sudoku_by_recursive(sol)
+        sol = solve_basic_sudoku(sol)
+        sol = solve_sudoku_by_recursive(sol, cnt=cnt+1)
 
         if sol==None:
             continue
         
         if is_legal_matrix(sol):
             return sol
+        elif defined_matrix(sol):
+            print("This question has no solution.")
+    if cnt < 10:
+        print('{}th loop is finished.'.format(cnt))
     return None
         
 def solve_sudoku(sudoku):
