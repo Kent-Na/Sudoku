@@ -56,18 +56,19 @@ class Sudoku_board:
 
 
     def at(self, x, y):
+        """Return cell at (x, y)"""
         return self._cells[y*ROW+x]
 
     def sub_row_idx(self, idx):
-        """Return n-th row as list"""
+        """Return coordinate of n-th row as list"""
         return [(i, idx) for i in range(ROW)]
 
     def sub_column_idx(self, idx):
-        """Return n-th column as list"""
+        """Return coordinate of n-th column as list"""
         return [(idx, i) for i in range(ROW)]
 
     def sub_block_idx(self, idx):
-        """Return n-th block as list"""
+        """Return coordinate of n-th block as list"""
         x_idx = [i for i in range(SIZE)]*SIZE
         #i.e. [0,1,2,0,1,2,0,1,2]
         y_idx = [i//SIZE for i in range(SIZE*SIZE)]
@@ -129,6 +130,7 @@ class Sudoku_board:
         """Set value at cell[x, y] and remove value from candiate
             at affected row, column, and blocks"""
         self.at(x, y).set_value(value)
+        self.at(x, y).set_candiate(set())
 
         for cell in self.sub_row(y):
             cell.remove_candiate(value)
@@ -138,7 +140,8 @@ class Sudoku_board:
             cell.remove_candiate(value)
         
     def rebuild_candidate(self):
-        s_row   = [set(self.sub_row_values(i))    for i in range (ROW)]
+        """Rebuild candiate cache from scratch."""
+        s_row    = [set(self.sub_row_values(i))    for i in range (ROW)]
         s_column = [set(self.sub_column_values(i)) for i in range (ROW)]
         s_block  = [set(self.sub_block_values(i))  for i in range (ROW)]
 
@@ -152,25 +155,29 @@ class Sudoku_board:
                 else:
                     self.at(x, y).set_candiate(set())
 
-    def load_from_file(self, filename):
-        with open(filename) as f:
-            text = f.read()
-            lines = text.splitlines()
-            y = 0
-            for line in lines:
-                if line.isspace():
+    def load_from_string(self, string):
+        """Load sudoku problem from string."""
+        lines = string.splitlines()
+        y = 0
+        for line in lines:
+            if line.isspace():
+                continue
+            x = 0
+            for c in line:
+                if c is '.':
+                    self.at(x,y).set_value(unknown)
+                elif c.isnumeric():
+                    self.at(x,y).set_value(int(c) - 1)
+                else:
                     continue
-                x = 0
-                for c in line:
-                    if c is '.':
-                        self.at(x,y).set_value(unknown)
-                    elif c.isnumeric():
-                        self.at(x,y).set_value(int(c) - 1)
-                    else:
-                        continue
-                    x += 1
-                y += 1
+                x += 1
+            y += 1
         self.rebuild_candidate()
+
+    def load_from_file(self, filename):
+        """Load sudoku problem from file."""
+        with open(filename) as f:
+            self.load_from_string(f.read())
 
     def funcy_print(self):
         for y in range(ROW):
