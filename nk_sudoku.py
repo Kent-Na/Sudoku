@@ -37,15 +37,16 @@ class Sudoku_cell:
         self._value = value
 
     def candiate(self):
-        return self._candiate
+        return self._candidate
     def set_candiate(self, value_set):
-        self._candiate = value_set
+        self._candidate = value_set
     def remove_candiate(self, value):
-        self._candiate -= set([value])
+        self._candidate -= set([value])
     def clone(self):
         cell = Sudoku_cell()
         cell._value = self._value
         cell._candidate = self._candidate.copy()
+        return cell
 
 class Sudoku_board:
     def __init__(self):
@@ -58,6 +59,9 @@ class Sudoku_board:
     def at(self, x, y):
         """Return cell at (x, y)"""
         return self._cells[y*ROW+x]
+
+    def candiate_at(self, x, y):
+        return self.at(x,y).candiate()
 
     def sub_row_idx(self, idx):
         """Return coordinate of n-th row as list"""
@@ -96,6 +100,7 @@ class Sudoku_board:
         new_s = Sudoku_board()
         for i in range(ROW*ROW):
             new_s._cells[i] = self._cells[i].clone()
+        return new_s
 
     def is_defined(self):
         """Return true if solution have no "undefined" cell"""
@@ -231,9 +236,9 @@ def simple_solve_B(s):
 def recursive_solve(s):
     for y in range (ROW):
         for x in range (ROW):
-            if s.at(x,y) != unknown:
+            if not s.at(x,y).is_unknown:
                 continue
-            for value in s.cand_at(x,y):
+            for value in s.candiate_at(x,y):
                 clone = s.clone()
                 clone.assign(x, y, value)
                 result = recursive_solve(clone)
@@ -242,7 +247,8 @@ def recursive_solve(s):
 
 s = Sudoku_board()
 #s.load_from_file("1_missing.dat")
-s.load_from_file("lv1.dat")
+#s.load_from_file("lv1.dat")
+s.load_from_file("difficult.dat")
 s.funcy_print()
 if not s.is_acceptable():
     print("fail from begining")
@@ -306,3 +312,5 @@ def run_test():
                 print("fail at A")
             modified = True
     s.funcy_print()
+
+    recursive_solve(s)
